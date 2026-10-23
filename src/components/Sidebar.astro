@@ -1,0 +1,19 @@
+---
+import type { ArchiveGroup } from '../utils/archive';
+
+interface Props {
+  archive: ArchiveGroup[];
+}
+const { archive } = Astro.props;
+---
+<aside class="sidebar" aria-label="Archive">
+  <h2 class="sidebar__title">Archive</h2>
+  <ul class="archive-list">
+    {archive.map((group) => (
+      <li>
+        <a href={`#${group.key}`}>{group.label}</a>
+        <span class="count">{group.posts.length}</span>
+      </li>
+    ))}
+  </ul>
+</aside>

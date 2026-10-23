@@ -1,0 +1,71 @@
+---
+const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '/archive', label: 'Archive' },
+];
+---
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="logo" href="/">YourBlog</a>
+
+    <nav class="nav nav--desktop" aria-label="Primary">
+      <ul>
+        {navItems.map((item) => (
+          <li><a href={item.href}>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <button
+      class="burger"
+      id="burger"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="drawer"
+      type="button"
+    >
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<nav class="drawer" id="drawer" aria-label="Primary mobile" aria-hidden="true">
+  <ul>
+    {navItems.map((item) => (
+      <li><a href={item.href}>{item.label}</a></li>
+    ))}
+  </ul>
+</nav>
+
+<script>
+  const burger = document.getElementById('burger');
+  const drawer = document.getElementById('drawer');
+  const overlay = document.getElementById('drawer-overlay');
+
+  function closeDrawer() {
+    drawer?.classList.remove('is-open');
+    overlay?.classList.remove('is-open');
+    drawer?.setAttribute('aria-hidden', 'true');
+    burger?.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('drawer-open');
+  }
+
+  function openDrawer() {
+    drawer?.classList.add('is-open');
+    overlay?.classList.add('is-open');
+    drawer?.setAttribute('aria-hidden', 'false');
+    burger?.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('drawer-open');
+  }
+
+  burger?.addEventListener('click', () => {
+    burger.getAttribute('aria-expanded') === 'true' ? closeDrawer() : openDrawer();
+  });
+
+  overlay?.addEventListener('click', closeDrawer);
+  drawer?.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeDrawer));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeDrawer();
+  });
+</script>

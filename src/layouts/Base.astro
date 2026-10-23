@@ -1,0 +1,27 @@
+---
+import Header from '../components/Header.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+const hasSidebar = Astro.slots.has('sidebar');
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <Header />
+    <div class:list={['page', hasSidebar && 'page--with-sidebar']}>
+      <main class="content">
+        <slot />
+      </main>
+      {hasSidebar && <slot name="sidebar" />}
+    </div>
+  </body>
+</html>

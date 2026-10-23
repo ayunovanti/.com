@@ -1,0 +1,23 @@
+backend:
+  name: github
+  repo: YOUR_GH_USERNAME/YOUR_REPO_NAME
+  branch: main
+  base_url: https://YOUR-OAUTH-WORKER.workers.dev
+  auth_endpoint: auth
+
+media_folder: "src/assets/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: blog
+    label: Blog Posts
+    folder: src/content/blog
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime }
+      - { label: Author, name: author, widget: string, required: false }
+      - { label: Tags, name: tags, widget: list, required: false }
+      - { label: Draft, name: draft, widget: boolean, default: false }
+      - { label: Body, name: body, widget: markdown }
