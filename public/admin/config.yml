@@ -5,8 +5,8 @@ backend:
   base_url: https://blog-cms-auth.madewith.workers.dev
   auth_endpoint: auth
 
-media_folder: "src/assets/uploads"
-public_folder: "/uploads"
+media_folder: "public/images/blog"
+public_folder: "/images/blog"
 
 collections:
   - name: blog
