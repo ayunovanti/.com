@@ -1,3 +1,11 @@
 name = "blog-cms-auth"
 main = "src/index.js"
 compatibility_date = "2024-11-01"
+
+[vars]
+GITHUB_CLIENT_ID = "Ov23liGVaTcRSjhH5CNj"
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+persist = true
