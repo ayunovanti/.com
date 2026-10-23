@@ -2,7 +2,9 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Comments from '../../components/Comments.astro';
-import AdSlot from '../../components/AdSlot.astro';
+import Placement from '../../components/Placement.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { groupByMonth } from '../../utils/archive';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -14,15 +16,22 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+
+const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const archive = groupByMonth(allPosts);
 ---
 <Base title={post.data.title}>
+  <Fragment slot="sidebar">
+    <Sidebar archive={archive} />
+  </Fragment>
   <article>
     {post.data.featuredImage && <img class="featured-image" src={post.data.featuredImage} alt="" />}
     <h1>{post.data.title}</h1>
     <p><small>{post.data.date.toDateString()} {post.data.author && `· ${post.data.author}`}</small></p>
-    <AdSlot slot="2222222222" label="Ad" />
+    <Placement slot="1797502924" label="Placement" />
     <Content />
   </article>
-  <AdSlot slot="3333333333" label="Ad" />
+  <Placement slot="2719586527" label="Placement" />
   <Comments comments={post.data.comments} />
 </Base>

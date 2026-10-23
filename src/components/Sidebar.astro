@@ -1,6 +1,6 @@
 ---
 import type { ArchiveGroup } from '../utils/archive';
-import AdSlot from './AdSlot.astro';
+import Placement from './Placement.astro';
 
 interface Props {
   archive: ArchiveGroup[];
@@ -17,5 +17,5 @@ const { archive } = Astro.props;
       </li>
     ))}
   </ul>
-  <AdSlot slot="1111111111" label="Sidebar ad" />
+  <Placement slot="1111111111" label="Sidebar ad" />
 </aside>
