@@ -6,6 +6,7 @@ import PostCard from '../../components/PostCard.astro';
 import Pagination from '../../components/Pagination.astro';
 import { groupByMonth } from '../../utils/archive';
 import { paginate, PER_PAGE } from '../../utils/paginate';
+import site from '../../data/site.json';
 
 export async function getStaticPaths() {
   const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
@@ -22,7 +23,7 @@ const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
 const archive = groupByMonth(allPosts);
 const { items: posts, page, totalPages } = paginate(allPosts, Number(Astro.params.page));
 ---
-<Base title="Kata Si Ayu No Vanti">
+<Base title={site.title}>
   <Fragment slot="sidebar">
     <Sidebar archive={archive} />
   </Fragment>

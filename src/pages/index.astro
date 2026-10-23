@@ -6,13 +6,14 @@ import PostCard from '../components/PostCard.astro';
 import Pagination from '../components/Pagination.astro';
 import { groupByMonth } from '../utils/archive';
 import { paginate } from '../utils/paginate';
+import site from '../data/site.json';
 
 const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const archive = groupByMonth(allPosts);
 const { items: posts, page, totalPages } = paginate(allPosts, 1);
 ---
-<Base title="Kata Si Ayu No Vanti">
+<Base title={site.title}>
   <Fragment slot="sidebar">
     <Sidebar archive={archive} />
   </Fragment>

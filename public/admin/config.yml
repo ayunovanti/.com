@@ -9,6 +9,15 @@ media_folder: "public/images/blog"
 public_folder: "/images/blog"
 
 collections:
+  - name: settings
+    label: Site Settings
+    files:
+      - name: general
+        label: General
+        file: src/data/site.json
+        fields:
+          - { label: Blog Title, name: title, widget: string }
+
   - name: blog
     label: Blog Posts
     folder: src/content/blog
