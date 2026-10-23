@@ -1,8 +1,8 @@
 backend:
   name: github
-  repo: YOUR_GH_USERNAME/YOUR_REPO_NAME
+  repo: ayunovanti/.com
   branch: main
-  base_url: https://YOUR-OAUTH-WORKER.workers.dev
+  base_url: https://blog-cms-auth.madewith.workers.dev
   auth_endpoint: auth
 
 media_folder: "src/assets/uploads"
@@ -18,6 +18,10 @@ collections:
       - { label: Title, name: title, widget: string }
       - { label: Date, name: date, widget: datetime }
       - { label: Author, name: author, widget: string, required: false }
+      - { label: Excerpt, name: excerpt, widget: text, required: false }
       - { label: Tags, name: tags, widget: list, required: false }
       - { label: Draft, name: draft, widget: boolean, default: false }
+      - { label: "Featured Image (path or URL)", name: featuredImage, widget: string, required: false }
+      - { label: "Canonical URL (do not edit)", name: canonicalUrl, widget: hidden, required: false }
+      - { label: "Comments (migrated, do not edit)", name: comments, widget: hidden, required: false }
       - { label: Body, name: body, widget: markdown }

@@ -4,6 +4,8 @@ date: 2019-09-26
 author: ayunovanti
 tags: ["Mary Poppins", "Mary Poppins Returns", "Masa Kecil", "test", "Updated"]
 draft: false
+featuredImage: "/images/blog/mary-poppins-dan-keajaiban-masa-kecil/westjetmagazine.jpg"
+canonicalUrl: "https://ayunovanti.com/mary-poppins-dan-keajaiban-masa-kecil.htm"
 ---
 
 > Migrated from [ayunovanti.com](https://ayunovanti.com/mary-poppins-dan-keajaiban-masa-kecil.htm).

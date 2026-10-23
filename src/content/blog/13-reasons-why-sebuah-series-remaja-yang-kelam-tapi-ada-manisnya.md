@@ -4,6 +4,8 @@ date: 2019-10-09
 author: ayunovanti
 tags: ["13 Reasons Why", "Clay Jensen", "Hannah Baker", "Netflix", "netflix series", "test", "Updated"]
 draft: false
+featuredImage: "/images/blog/13-reasons-why-sebuah-series-remaja-yang-kelam-tapi-ada-manisnya/pinterest-1.jpg"
+canonicalUrl: "https://ayunovanti.com/13-reasons-why-sebuah-series-remaja-yang-kelam-tapi-ada-manisnya.htm"
 ---
 
 > Migrated from [ayunovanti.com](https://ayunovanti.com/13-reasons-why-sebuah-series-remaja-yang-kelam-tapi-ada-manisnya.htm).

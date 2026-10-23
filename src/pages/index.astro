@@ -2,34 +2,23 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Sidebar from '../components/Sidebar.astro';
+import PostCard from '../components/PostCard.astro';
+import Pagination from '../components/Pagination.astro';
 import { groupByMonth } from '../utils/archive';
-import { makeExcerpt } from '../utils/excerpt';
+import { paginate } from '../utils/paginate';
 
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
+const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const archive = groupByMonth(posts);
+const archive = groupByMonth(allPosts);
+const { items: posts, page, totalPages } = paginate(allPosts, 1);
 ---
-<Base title="Blog">
+<Base title="Kata Si Ayu No Vanti">
   <Fragment slot="sidebar">
     <Sidebar archive={archive} />
   </Fragment>
 
-  {archive.map((group) => (
-    <section id={group.key} class="archive-group">
-      <h2 class="archive-group__label">{group.label}</h2>
-      <ul class="post-list">
-        {group.posts.map((post) => (
-          <li class="post-card">
-            <a href={`/blog/${post.id}/`}>
-              <h3>{post.data.title}</h3>
-            </a>
-            <time datetime={post.data.date.toISOString()}>
-              {post.data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-            </time>
-            <p class="post-card__excerpt">{post.data.excerpt ?? makeExcerpt(post.body ?? '')}</p>
-          </li>
-        ))}
-      </ul>
-    </section>
-  ))}
+  <ul class="post-list">
+    {posts.map((post) => <PostCard post={post} />)}
+  </ul>
+  <Pagination page={page} totalPages={totalPages} />
 </Base>

@@ -25,20 +25,18 @@ Posts live in `src/content/blog/*.md`.
 
 Sveltia needs a tiny OAuth proxy so the admin can log in with GitHub. `oauth-worker/` is that proxy, deployed as a free Cloudflare Worker.
 
+Worker is already deployed: `https://blog-cms-auth.madewith.workers.dev` (repo `ayunovanti/.com` is set in `public/admin/config.yml`). Remaining step is yours — GitHub doesn't let this be automated:
+
 1. GitHub → Settings → Developer settings → OAuth Apps → New OAuth App.
-   - Homepage URL: your Pages URL.
-   - Authorization callback URL: `https://YOUR-WORKER-NAME.workers.dev/callback`
-2. Deploy the worker:
+   - Homepage URL: your Pages URL (once deployed).
+   - Authorization callback URL: `https://blog-cms-auth.madewith.workers.dev/callback`
+2. Set the secrets on the worker (run these yourself so the values never leave your terminal):
    ```
    cd oauth-worker
-   npx wrangler deploy
    npx wrangler secret put GITHUB_CLIENT_ID
    npx wrangler secret put GITHUB_CLIENT_SECRET
    ```
-3. Edit `public/admin/config.yml`:
-   - `repo`: `YOUR_GH_USERNAME/YOUR_REPO_NAME`
-   - `base_url`: `https://YOUR-WORKER-NAME.workers.dev`
-4. Commit, push, redeploy. Visit `https://your-site.pages.dev/admin` to log in and write posts.
+3. Once the Pages site is deployed, visit `https://your-site.pages.dev/admin` to log in with GitHub and write posts.
 
 Every save commits a markdown file to the repo → Cloudflare Pages auto-rebuilds and deploys.
 

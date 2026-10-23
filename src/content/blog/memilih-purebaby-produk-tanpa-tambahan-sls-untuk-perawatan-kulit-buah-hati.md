@@ -9,9 +9,13 @@ comments:
   - author: "Ursula Meta Rosarini"
     date: 2019-09-18T16:39:33
     content: "Wahh aku baru tau produk ini, terima kasih buat reviewnya ya mbak"
+    url: "https://ayunovanti.com/memilih-purebaby-produk-tanpa-tambahan-sls-untuk-perawatan-kulit-buah-hati.htm#comment-849"
   - author: "Dahlian Ayu Novanti"
+    authorUrl: "http://ayunovanti.com/"
     date: 2019-09-25T16:40:22
     content: "kembali kasih, sudah banyak dijual di supermarket kok"
+    url: "https://ayunovanti.com/memilih-purebaby-produk-tanpa-tambahan-sls-untuk-perawatan-kulit-buah-hati.htm#comment-850"
+canonicalUrl: "https://ayunovanti.com/memilih-purebaby-produk-tanpa-tambahan-sls-untuk-perawatan-kulit-buah-hati.htm"
 ---
 
 > Migrated from [ayunovanti.com](https://ayunovanti.com/memilih-purebaby-produk-tanpa-tambahan-sls-untuk-perawatan-kulit-buah-hati.htm).

@@ -4,9 +4,11 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
+  canonicalUrl?: string;
 }
-const { title } = Astro.props;
+const { title, canonicalUrl } = Astro.props;
 const hasSidebar = Astro.slots.has('sidebar');
+const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).toString();
 ---
 <!doctype html>
 <html lang="en">
@@ -14,6 +16,11 @@ const hasSidebar = Astro.slots.has('sidebar');
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <link rel="canonical" href={canonical} />
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+      crossorigin="anonymous"></script>
   </head>
   <body>
     <Header />

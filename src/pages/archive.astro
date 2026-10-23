@@ -15,7 +15,7 @@ const archive = groupByMonth(posts);
       <ul class="post-list">
         {group.posts.map((post) => (
           <li class="post-card">
-            <a href={`/blog/${post.id}/`}>
+            <a href={`/article/${post.id}/`}>
               <h3>{post.data.title}</h3>
             </a>
             <time datetime={post.data.date.toISOString()}>

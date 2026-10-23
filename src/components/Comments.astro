@@ -1,8 +1,10 @@
 ---
 interface Comment {
   author: string;
+  authorUrl?: string;
   date: Date;
   content: string;
+  url?: string;
 }
 interface Props {
   comments?: Comment[];
@@ -15,8 +17,16 @@ const { comments = [] } = Astro.props;
     <ul>
       {comments.map((c) => (
         <li class="archived-comment">
-          <strong>{c.author}</strong>
-          <time datetime={c.date.toISOString()}>{c.date.toDateString()}</time>
+          {c.authorUrl ? (
+            <a href={c.authorUrl} rel="nofollow ugc" target="_blank"><strong>{c.author}</strong></a>
+          ) : (
+            <strong>{c.author}</strong>
+          )}
+          {c.url ? (
+            <a href={c.url} class="archived-comment__permalink"><time datetime={c.date.toISOString()}>{c.date.toDateString()}</time></a>
+          ) : (
+            <time datetime={c.date.toISOString()}>{c.date.toDateString()}</time>
+          )}
           <p>{c.content}</p>
         </li>
       ))}

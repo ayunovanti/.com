@@ -1,0 +1,23 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { makeExcerpt } from '../utils/excerpt';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+const { post } = Astro.props;
+---
+<li class="post-card">
+  <a href={`/article/${post.id}/`} class="post-card__link">
+    {post.data.featuredImage && (
+      <img class="post-card__thumb" src={post.data.featuredImage} alt="" loading="lazy" />
+    )}
+    <div class="post-card__body">
+      <h3>{post.data.title}</h3>
+      <time datetime={post.data.date.toISOString()}>
+        {post.data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+      </time>
+      <p class="post-card__excerpt">{post.data.excerpt ?? makeExcerpt(post.body ?? '')}</p>
+    </div>
+  </a>
+</li>

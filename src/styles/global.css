@@ -237,8 +237,25 @@ a {
   border-bottom: 1px solid var(--color-border);
 }
 
-.post-card a {
+.post-card__link {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
   text-decoration: none;
+  color: inherit;
+}
+
+.post-card__thumb {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.post-card__body {
+  flex: 1;
+  min-width: 0;
 }
 
 .post-card h3 {
@@ -255,6 +272,47 @@ a {
   margin: 0.6rem 0 0;
   color: var(--color-text);
   font-size: 0.95rem;
+}
+
+/* ad slots */
+
+.ad-slot {
+  margin: 1.5rem 0;
+  padding: 0.5rem 0;
+  min-height: 2rem;
+}
+
+.ad-slot__label {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  margin-bottom: 0.4rem;
+}
+
+/* pagination */
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+
+.pagination a {
+  text-decoration: none;
+}
+
+.pagination a:hover {
+  text-decoration: underline;
+}
+
+.pagination__status {
+  color: var(--color-muted);
 }
 
 /* single post */
@@ -305,6 +363,14 @@ article img {
   color: var(--color-muted);
   font-size: 0.8rem;
   margin-left: 0.5rem;
+}
+
+.archived-comment__permalink {
+  text-decoration: none;
+}
+
+.archived-comment__permalink:hover time {
+  text-decoration: underline;
 }
 
 .archived-comment p {

@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Comments from '../../components/Comments.astro';
+import AdSlot from '../../components/AdSlot.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -19,7 +20,9 @@ const { Content } = await render(post);
     {post.data.featuredImage && <img class="featured-image" src={post.data.featuredImage} alt="" />}
     <h1>{post.data.title}</h1>
     <p><small>{post.data.date.toDateString()} {post.data.author && `· ${post.data.author}`}</small></p>
+    <AdSlot slot="2222222222" label="Ad" />
     <Content />
   </article>
+  <AdSlot slot="3333333333" label="Ad" />
   <Comments comments={post.data.comments} />
 </Base>

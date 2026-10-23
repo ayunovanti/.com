@@ -1,19 +1,25 @@
 #!/usr/bin/env python3
 """
-Import a WordPress post into src/content/blog/ as markdown, images downloaded locally.
+Import WordPress post(s) into src/content/blog/ as markdown, images + comments included.
 
 Usage:
   python3 scripts/import_wp_post.py --rank 2
   python3 scripts/import_wp_post.py --slug some-post-slug
+  python3 scripts/import_wp_post.py --all
+  python3 scripts/import_wp_post.py --all --force
   python3 scripts/import_wp_post.py --rank 3 --site https://otherblog.com
 
---rank N picks the Nth most recent post (1 = latest, already imported once; default 2).
+--rank N picks the Nth most recent post (1 = latest; default: 2).
+--all fetches every post on the site (paginated), each with its own comments and images.
+Already-imported posts (same slug file exists) are skipped unless --force is passed.
 """
 import argparse
+import glob
 import html
 import json
 import os
 import re
+import urllib.error
 import urllib.request
 from html.parser import HTMLParser
 from urllib.parse import urlparse
@@ -22,6 +28,7 @@ SITE_DEFAULT = "https://ayunovanti.com"
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLOG_DIR = os.path.join(PROJECT_ROOT, "src", "content", "blog")
 IMAGES_ROOT = os.path.join(PROJECT_ROOT, "public", "images", "blog")
+REDIRECTS_PATH = os.path.join(PROJECT_ROOT, "public", "_redirects")
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"}
 
@@ -122,15 +129,33 @@ def slugify(value: str) -> str:
 
 
 def fetch_comments(site: str, post_id: int) -> list[dict]:
-    comments = fetch_json(f"{site}/wp-json/wp/v2/comments?post={post_id}&per_page=100&order=asc")
     result = []
-    for c in comments:
-        content = re.sub(r'<[^>]+>', ' ', c.get('content', {}).get('rendered', ''))
-        result.append({
-            'author': clean_text(c.get('author_name', 'Anonymous')),
-            'date': c.get('date', ''),
-            'content': clean_text(content),
-        })
+    page = 1
+    while True:
+        url = f"{site}/wp-json/wp/v2/comments?post={post_id}&per_page=100&page={page}&order=asc"
+        try:
+            batch = fetch_json(url)
+        except urllib.error.HTTPError as e:
+            if e.code == 400:  # past the last page
+                break
+            raise
+        if not batch:
+            break
+        for c in batch:
+            content = re.sub(r'<[^>]+>', ' ', c.get('content', {}).get('rendered', ''))
+            comment = {
+                'author': clean_text(c.get('author_name', 'Anonymous')),
+                'date': c.get('date', ''),
+                'content': clean_text(content),
+                'url': c.get('link', ''),
+            }
+            author_url = (c.get('author_url') or '').strip()
+            if author_url:
+                comment['authorUrl'] = author_url
+            result.append(comment)
+        if len(batch) < 100:
+            break
+        page += 1
     return result
 
 
@@ -143,6 +168,23 @@ def fetch_post(site: str, rank: int | None, slug: str | None) -> dict:
     if not posts:
         raise SystemExit(f"No post found for {slug or f'rank {rank}'}")
     return posts[0]
+
+
+def fetch_all_posts(site: str):
+    """Yields every post on the site, newest first, paginating until exhausted."""
+    page = 1
+    while True:
+        url = f"{site}/wp-json/wp/v2/posts?per_page=100&page={page}&orderby=date&order=desc&_embed"
+        try:
+            posts = fetch_json(url)
+        except urllib.error.HTTPError as e:
+            if e.code == 400:  # rest_post_invalid_page_number -- past the last page
+                return
+            raise
+        if not posts:
+            return
+        yield from posts
+        page += 1
 
 
 def convert_post(post: dict):
@@ -208,12 +250,17 @@ def write_markdown(meta: dict, body_md: str, image_map: dict, comments: list[dic
     ]
     if featured_image:
         frontmatter_lines.append(f'featuredImage: "{featured_image}"')
+    frontmatter_lines.append(f'canonicalUrl: "{yaml_escape(meta["link"])}"')
     if comments:
         frontmatter_lines.append('comments:')
         for c in comments:
             frontmatter_lines.append(f'  - author: "{yaml_escape(c["author"])}"')
+            if c.get('authorUrl'):
+                frontmatter_lines.append(f'    authorUrl: "{yaml_escape(c["authorUrl"])}"')
             frontmatter_lines.append(f'    date: {c["date"]}')
             frontmatter_lines.append(f'    content: "{yaml_escape(c["content"])}"')
+            if c.get('url'):
+                frontmatter_lines.append(f'    url: "{yaml_escape(c["url"])}"')
     frontmatter_lines.append('---')
 
     frontmatter = '\n'.join(frontmatter_lines)
@@ -229,16 +276,30 @@ def write_markdown(meta: dict, body_md: str, image_map: dict, comments: list[dic
     return out_path
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--site', default=SITE_DEFAULT)
-    parser.add_argument('--rank', type=int, default=2, help='Nth most recent post, 1 = latest (default: 2)')
-    parser.add_argument('--slug', help='import this exact WordPress slug instead of using --rank')
-    args = parser.parse_args()
+def regenerate_redirects():
+    """Rebuilds public/_redirects from every post's canonicalUrl (old WP URL) -> new /article/ path."""
+    lines = []
+    for path in sorted(glob.glob(os.path.join(BLOG_DIR, "*.md"))):
+        slug = os.path.basename(path)[:-3]
+        text = open(path, encoding="utf-8").read()
+        m = re.search(r'^canonicalUrl:\s*"([^"]+)"', text, re.M)
+        if not m:
+            continue
+        old_path = urlparse(m.group(1)).path
+        lines.append(f"{old_path} /article/{slug}/ 301")
 
-    post = fetch_post(args.site, args.rank, args.slug)
+    with open(REDIRECTS_PATH, "w") as f:
+        f.write("\n".join(lines) + "\n")
+    print(f"regenerated public/_redirects ({len(lines)} entries)")
+
+
+def already_imported(slug: str) -> bool:
+    return os.path.exists(os.path.join(BLOG_DIR, f"{slug}.md"))
+
+
+def process_post(site: str, post: dict) -> str:
     meta, body_md, images = convert_post(post)
-    comments = fetch_comments(args.site, meta['id'])
+    comments = fetch_comments(site, meta['id'])
 
     print(f"title: {meta['title']}")
     print(f"slug:  {meta['slug']}")
@@ -251,7 +312,42 @@ def main():
 
     image_map = download_images(images, meta['slug'])
     featured_image = image_map.get(images[0]['src']) if images else None
-    out_path = write_markdown(meta, body_md, image_map, comments, featured_image)
+    return write_markdown(meta, body_md, image_map, comments, featured_image)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('--site', default=SITE_DEFAULT)
+    parser.add_argument('--rank', type=int, default=2, help='Nth most recent post, 1 = latest (default: 2)')
+    parser.add_argument('--slug', help='import this exact WordPress slug instead of using --rank')
+    parser.add_argument('--all', action='store_true', help='import every post on the site')
+    parser.add_argument('--force', action='store_true', help='re-import even if already imported')
+    args = parser.parse_args()
+
+    if args.all:
+        imported, skipped, failed = 0, 0, 0
+        for post in fetch_all_posts(args.site):
+            slug = post['slug']
+            if not args.force and already_imported(slug):
+                print(f"skip (already imported): {slug}")
+                skipped += 1
+                continue
+            try:
+                out_path = process_post(args.site, post)
+                print(f"written: {out_path}\n")
+                imported += 1
+            except Exception as e:
+                print(f"FAILED: {slug} -- {e}\n")
+                failed += 1
+        print(f"done. imported={imported} skipped={skipped} failed={failed}")
+        regenerate_redirects()
+        return
+
+    post = fetch_post(args.site, args.rank, args.slug)
+    if not args.force and already_imported(post['slug']):
+        raise SystemExit(f"already imported: {post['slug']} (use --force to re-import)")
+    out_path = process_post(args.site, post)
+    regenerate_redirects()
     print(f"written: {out_path}")
 
 

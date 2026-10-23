@@ -1,0 +1,24 @@
+---
+interface Props {
+  page: number;
+  totalPages: number;
+}
+const { page, totalPages } = Astro.props;
+
+const hrefFor = (p: number) => (p <= 1 ? '/' : `/page/${p}`);
+---
+{totalPages > 1 && (
+  <nav class="pagination" aria-label="Posts pagination">
+    {page > 1 ? (
+      <a href={hrefFor(page - 1)} rel="prev">&larr; Newer</a>
+    ) : (
+      <span></span>
+    )}
+    <span class="pagination__status">Page {page} of {totalPages}</span>
+    {page < totalPages ? (
+      <a href={hrefFor(page + 1)} rel="next">Older &rarr;</a>
+    ) : (
+      <span></span>
+    )}
+  </nav>
+)}

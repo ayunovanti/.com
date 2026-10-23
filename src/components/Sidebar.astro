@@ -1,5 +1,6 @@
 ---
 import type { ArchiveGroup } from '../utils/archive';
+import AdSlot from './AdSlot.astro';
 
 interface Props {
   archive: ArchiveGroup[];
@@ -11,9 +12,10 @@ const { archive } = Astro.props;
   <ul class="archive-list">
     {archive.map((group) => (
       <li>
-        <a href={`#${group.key}`}>{group.label}</a>
+        <a href={`/archive#${group.key}`}>{group.label}</a>
         <span class="count">{group.posts.length}</span>
       </li>
     ))}
   </ul>
+  <AdSlot slot="1111111111" label="Sidebar ad" />
 </aside>

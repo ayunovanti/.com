@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import PostCard from '../../components/PostCard.astro';
+import Pagination from '../../components/Pagination.astro';
+import { groupByMonth } from '../../utils/archive';
+import { paginate, PER_PAGE } from '../../utils/paginate';
+
+export async function getStaticPaths() {
+  const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  const totalPages = Math.max(1, Math.ceil(allPosts.length / PER_PAGE));
+
+  return Array.from({ length: totalPages - 1 }, (_, i) => ({
+    params: { page: String(i + 2) }, // page 1 lives at "/"
+  }));
+}
+
+const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const archive = groupByMonth(allPosts);
+const { items: posts, page, totalPages } = paginate(allPosts, Number(Astro.params.page));
+---
+<Base title="Kata Si Ayu No Vanti">
+  <Fragment slot="sidebar">
+    <Sidebar archive={archive} />
+  </Fragment>
+
+  <ul class="post-list">
+    {posts.map((post) => <PostCard post={post} />)}
+  </ul>
+  <Pagination page={page} totalPages={totalPages} />
+</Base>
