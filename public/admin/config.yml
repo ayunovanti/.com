@@ -17,6 +17,7 @@ collections:
         file: src/data/site.json
         fields:
           - { label: Blog Title, name: title, widget: string }
+          - { label: Logo Image, name: logoImage, widget: image, required: false }
 
   - name: blog
     label: Blog Posts

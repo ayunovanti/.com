@@ -9,7 +9,10 @@ const logo = site.title;
 ---
 <header class="site-header">
   <div class="site-header__inner">
-    <a class="logo" href="/">{logo}</a>
+    <a class="logo" href="/">
+      {site.logoImage && <img class="logo__image" src={site.logoImage} alt="" />}
+      {logo}
+    </a>
 
     <nav class="nav nav--desktop" aria-label="Primary">
       <ul>
